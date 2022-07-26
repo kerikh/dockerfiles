@@ -42,7 +42,7 @@ def parse_uri(uri):
         b64 = obj.netloc
         b64 += "=" * ((4 - len(b64) % 4) % 4)
         uri = base64.decodestring(b64)
-        obj = urlparse('ss://' + uri)
+        obj = urlparse(f'ss://{uri}')
     param = dict(
         method = obj.username or 'aes-256-cfb',
         password = obj.password,
@@ -72,10 +72,7 @@ def run_curl(lport, timeout=5):
 
 def gen_config(args, bind, port, enc):
 
-    if enc:
-        uri = '{0[method]}:{0[password]}@{0[server]}:{0[server_port]}'.format(args)
-        return 'ss://' + base64.encodestring(uri).rstrip('=\n')
-    else:
+    if not enc:
         return json.dumps({
             'local_address': bind,
             'local_port': port or random_port(),
@@ -84,6 +81,8 @@ def gen_config(args, bind, port, enc):
             'method': args['method'],
             'password': args['password'],
         }, indent=2)
+    uri = '{0[method]}:{0[password]}@{0[server]}:{0[server_port]}'.format(args)
+    return 'ss://' + base64.encodestring(uri).rstrip('=\n')
 
 
 if __name__ == '__main__':

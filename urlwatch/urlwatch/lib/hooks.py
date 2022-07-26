@@ -23,7 +23,7 @@ def filter(url, data):
     try:
 
         for key, cfg in config.items():
-            if url.endswith('#' + key):
+            if url.endswith(f'#{key}'):
                 if not url.startswith(cfg['url']):
                     raise Exception('url mismatch')
                 if 'xpath' in cfg:
@@ -38,12 +38,15 @@ def filter(url, data):
 
         dom = lxml.html.fromstring(data.encode('utf-8'))
         txt = dom.xpath(xpath)[0]
-        ver = re.search(r'(?i)([0-9]+\.)*[0-9]+(-?(alpha|beta|rc)[0-9]+)?', txt).group(0).lower()
-        return '{}: {}\n'.format(key, ver)
+        ver = re.search(
+            r'(?i)([0-9]+\.)*[0-9]+(-?(alpha|beta|rc)[0-9]+)?', txt
+        )[0].lower()
+
+        return f'{key}: {ver}\n'
 
     except:
 
-        return '{}: {}\n'.format(key, 'unknown')
+        return f'{key}: unknown\n'
 
 
 if __name__ == '__main__':
